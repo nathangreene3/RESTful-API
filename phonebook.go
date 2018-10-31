@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-// PhoneBook is a slice of persons (people).
+// PhoneBook is a slice of people stored in a csv file.
 type PhoneBook struct {
-	FileName *string  // FileName references the storage location of the phonebook as a csv file
+	FileName string   // FileName references the storage location of the phonebook as a csv file
 	People   []Person // People are listed with their phonenumbers and addresses
 }
 
@@ -26,6 +26,7 @@ func (phonebook *PhoneBook) Swap(i, j int) {
 	phonebook.People[i], phonebook.People[j] = phonebook.People[j], phonebook.People[i]
 }
 
+// inserts a person into the phonebook, then sorts the phonebook. Duplicate insertions are possible.
 func (phonebook *PhoneBook) insert(person *Person) {
 	if phonebook.indexOf(person.ID) == len(phonebook.People) {
 		phonebook.People = append(phonebook.People, *person)
@@ -42,7 +43,7 @@ func (phonebook *PhoneBook) remove(id int) {
 }
 
 func importPhonebook(filepath string) (*PhoneBook, error) {
-	phonebook := &PhoneBook{}
+	phonebook := &PhoneBook{FileName: filepath}
 	reader := csv.NewReader(strings.NewReader(filepath))
 	for i := 0; ; i++ {
 		data, err := reader.Read()
@@ -89,7 +90,7 @@ func (phonebook *PhoneBook) personExists(id int) bool {
 	return false
 }
 
-// indexOf returns the index of a person in a phonebook. If the person is not found, then n is returned.
+// indexOf returns the index of a person in a phonebook. If the person is not found by ID, then n is returned.
 func (phonebook *PhoneBook) indexOf(id int) int {
 	return sort.Search(
 		id,
