@@ -10,20 +10,10 @@ import (
 
 // PhoneBook is a slice of people stored in a csv file.
 type PhoneBook struct {
-	FileName string   // FileName references the storage location of the phonebook as a csv file
-	People   []Person // People are listed with their phonenumbers and addresses
-}
-
-func (phonebook *PhoneBook) Len() int {
-	return len(phonebook.People)
-}
-
-func (phonebook *PhoneBook) Less(i, j int) bool {
-	return phonebook.People[i].ID < phonebook.People[j].ID
-}
-
-func (phonebook *PhoneBook) Swap(i, j int) {
-	phonebook.People[i], phonebook.People[j] = phonebook.People[j], phonebook.People[i]
+	// FileName references the storage location of the phonebook as a csv file
+	FileName string
+	// People are listed with their phonenumbers and addresses
+	People []Person
 }
 
 // inserts a person into the phonebook, then sorts the phonebook. Duplicate insertions are possible.
@@ -42,6 +32,7 @@ func (phonebook *PhoneBook) remove(id int) {
 	}
 }
 
+// importPhonebook returns a phonebook read from a csv file.
 func importPhonebook(filepath string) (*PhoneBook, error) {
 	phonebook := &PhoneBook{FileName: filepath}
 	reader := csv.NewReader(strings.NewReader(filepath))
@@ -77,8 +68,15 @@ func importPhonebook(filepath string) (*PhoneBook, error) {
 	return phonebook, nil
 }
 
+// updatePhonebook TODO
 func updatePhonebook(filepath *string, phonebook *PhoneBook) error {
-	// writer:=csv.Writer(run(","),true,)
+	// file,err:=os.OpenFile(filepath,os.O_WRONLY,os.ModePerm)
+	// if err!=nil{
+	// 	return err
+	// }
+	// defer file.Close()
+
+	// writer:=csv.NewWriter()
 	return nil
 }
 
@@ -92,13 +90,20 @@ func (phonebook *PhoneBook) personExists(id int) bool {
 
 // indexOf returns the index of a person in a phonebook. If the person is not found by ID, then n is returned.
 func (phonebook *PhoneBook) indexOf(id int) int {
-	return sort.Search(
-		id,
-		func(i int) bool {
-			if phonebook.People[i].ID == id {
-				return true
-			}
-			return false
-		},
-	)
+	return sort.Search(id, func(i int) bool { return phonebook.People[i].ID == id })
+}
+
+// Len returns the number of people in the phonebook. It is used to sort the phonebook.
+func (phonebook *PhoneBook) Len() int {
+	return len(phonebook.People)
+}
+
+// Less returns the less-than comparison of two people in the phonebook. It is used to sort the phonebook.
+func (phonebook *PhoneBook) Less(i, j int) bool {
+	return phonebook.People[i].ID < phonebook.People[j].ID
+}
+
+// Swap swaps two people in the phonebook. It is used to sort the phonebook.
+func (phonebook *PhoneBook) Swap(i, j int) {
+	phonebook.People[i], phonebook.People[j] = phonebook.People[j], phonebook.People[i]
 }

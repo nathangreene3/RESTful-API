@@ -17,20 +17,6 @@ type Person struct {
 	Address     *Address `json:"address,omitempty"`
 }
 
-// GetPeople returns all people from the phonebook.
-func GetPeople(w http.ResponseWriter, r *http.Request) {
-	phonebook, err := importPhonebook("phonebook.csv")
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
-	err = json.NewEncoder(w).Encode(phonebook.People)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
-}
-
 // GetPerson retrieves a Person given a valid id.
 func GetPerson(w http.ResponseWriter, r *http.Request) {
 	phonebook, err := importPhonebook("phonebook.csv")
@@ -56,6 +42,20 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetPeople returns all people from the phonebook.
+func GetPeople(w http.ResponseWriter, r *http.Request) {
+	phonebook, err := importPhonebook("phonebook.csv")
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+	err = json.NewEncoder(w).Encode(phonebook.People)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+}
+
 // CreatePerson inserts a new person into the phonebook.
 func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	// params := mux.Vars(r)
@@ -69,17 +69,11 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	// insertIntoPhonebook("phonebook.csv", person)
 }
 
-func newPerson() (person Person) {
-	return Person{
-		ID:          0,
-		FirstName:   "",
-		LastName:    "",
-		PhoneNumber: 0,
-		Address: &Address{
-			City:  "",
-			State: "",
-		},
+func newPerson(id int) *Person {
+	if 0 < id {
+		return &Person{ID: id, Address: &Address{}}
 	}
+	return nil
 }
 
 // DeletePerson removes a person from the Phonebook given a valid ID.
